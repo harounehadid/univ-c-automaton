@@ -8,21 +8,38 @@ typedef struct automaton {
 }automaton;
 
 int main() {
-    
+    automaton* automatonChain;
+    int statesToAdd;
 
-    
+    printf("---------- Welcome ----------------");    
+    printf("How many states to add: ");
+    scanf("%d", &statesToAdd);
+
+    for (int i = 0; i < statesToAdd; i++) {
+        int transition;
+
+        printf("State number %d transition: ", i);
+        scanf("%d", &transition);
+
+        automaton* newState = createNewNode(i);
+        addToAutomatonChain(automatonChain, newState);
+    }    
 
     return 0;
 }
 
-automaton* createNewNode(int state, char transition) {
+automaton* createNewNode(int state) {
     automaton* newNode = malloc(sizeof(automaton));
+    char transition;
+
+    printf("Enter transition character: ");
+    scanf("%c", &transition);
 
     newNode->state = state;
     newNode->transition = transition;
     newNode->next = NULL;
 
-    return NULL;
+    return newNode;
 }
 
 void addToAutomatonChain(automaton* chain, automaton* node) {
@@ -43,4 +60,15 @@ void addToAutomatonChain(automaton* chain, automaton* node) {
     }
 }
 
-//Display info
+void displayAutomaton(automaton* chain) {
+    automaton* temp = chain;
+
+    while (temp != NULL) {
+        if (temp->next != NULL) {
+            printf("(%d)- %c ->", temp->state, temp->transition);
+        }
+        else {
+            printf("(%d)", temp->state);
+        }
+    }
+}
