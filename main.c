@@ -15,7 +15,7 @@ int main() {
     printf("How many states to add: ");
     scanf("%d", &statesToAdd);
 
-    for (int i = 0; i < statesToAdd; i++) {
+    for (int i = 1; i <= statesToAdd; i++) {
         int transition;
 
         printf("State number %d transition: ", i);
@@ -23,13 +23,15 @@ int main() {
 
         automaton* newState = createNewNode(i);
         addToAutomatonChain(automatonChain, newState);
-    }    
+    }
+
+    displayAutomaton(automatonChain);
 
     return 0;
 }
 
 automaton* createNewNode(int state) {
-    automaton* newNode = malloc(sizeof(automaton));
+    automaton* newNode = (automaton*)malloc(sizeof(automaton));
     char transition;
 
     printf("Enter transition character: ");
