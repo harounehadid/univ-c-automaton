@@ -7,34 +7,22 @@ typedef struct automaton {
     struct automaton* next;
 }automaton;
 
-int main() {
-    automaton* automatonChain;
-    int statesToAdd;
 
-    printf("---------- Welcome ----------------");    
-    printf("How many states to add: ");
-    scanf("%d", &statesToAdd);
-
-    for (int i = 1; i <= statesToAdd; i++) {
-        int transition;
-
-        printf("State number %d transition: ", i);
-        scanf("%d", &transition);
-
-        automaton* newState = createNewNode(i);
-        addToAutomatonChain(automatonChain, newState);
-    }
-
-    displayAutomaton(automatonChain);
-
-    return 0;
-}
 
 automaton* createNewNode(int state) {
-    automaton* newNode = (automaton*)malloc(sizeof(automaton));
+    // To prevent jumpig lines
+    fflush(stdin);
+
+    automaton* newNode = NULL;
     char transition;
 
-    printf("Enter transition character: ");
+    // The while loop to counter memory allocation failures
+    do {
+        newNode = malloc(sizeof(automaton));
+    
+    } while (newNode == NULL);
+
+    printf("Enter the transition of state number %d: ", state);
     scanf("%c", &transition);
 
     newNode->state = state;
@@ -44,33 +32,58 @@ automaton* createNewNode(int state) {
     return newNode;
 }
 
-void addToAutomatonChain(automaton* chain, automaton* node) {
+automaton* addToAutomatonChain(automaton* chain, automaton* node) {
+    // To prevent jumping lines
+    fflush(stdin);
+
     if (chain == NULL) {
         chain = node;
         node = NULL;
+        
     }
     else {
         automaton* temp = chain;
 
         while (temp->next != NULL) {
             temp = temp->next;
+            
         }
 
         temp->next = node;
         temp = NULL;
         node = NULL;
     }
+
+    return chain;
 }
 
 void displayAutomaton(automaton* chain) {
+    // To prevent jumping lines
+    fflush(stdin);
+
     automaton* temp = chain;
 
     while (temp != NULL) {
-        if (temp->next != NULL) {
-            printf("(%d)- %c ->", temp->state, temp->transition);
-        }
-        else {
-            printf("(%d)", temp->state);
-        }
+        printf("(%d)", temp->state);
+        if (temp->next != NULL) printf("- %c ->", temp->transition);
+        temp = temp->next;
     }
+}
+
+int main() {
+    automaton* automatonChain = NULL;
+    int statesToAdd;
+
+    printf("---------- Welcome ----------------");    
+    printf("\nHow many states to add: ");
+    scanf("%d", &statesToAdd);
+
+    for (int i = 1; i <= statesToAdd; i++) {
+        automaton* newState = createNewNode(i);
+        automatonChain = addToAutomatonChain(automatonChain, newState);
+    }
+
+    displayAutomaton(automatonChain);
+
+    return 0;
 }
