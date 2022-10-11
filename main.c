@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 typedef struct stringList {
-    char* text;
+    char* word;
     struct stringList* next;
 } stringList;
 
@@ -76,6 +76,64 @@ void displayAutomaton(automaton* chain) {
     }
 }
 
+int getAutomatonLength(automaton* chain) {
+    automaton* temp = chain;
+    int length = 0;
+
+    while (temp != NULL) {
+        length++;
+        temp = temp->next;
+    }
+
+    return length;
+}
+
+char* readFileAndReturnText(char* fileName) {
+    // Just in case
+    fflush(stdin);
+
+    FILE* file;
+    char ch;
+
+    // Opening the file
+    file = fopen(fileName, "r");
+
+    if (file == NULL) printf("\nThe file can't be opened\n");
+
+    printf("\n\nChecking file...\n");
+
+    // Count how many character in the file
+    int charCount = 0;
+
+    for (char c = getc(file); c != EOF; c = getc(file)) {
+        charCount++;
+    }
+
+    // Going back to the begining of the file
+    rewind(file);
+
+    // Creating the variable that's gonna hold all file's text
+    char* str;
+
+    do {
+        str = malloc(charCount * sizeof(char));
+
+    } while (str == NULL);
+    
+
+    // Append characters from the file to form a string
+    do {
+        ch = fgetc(file);
+        strncat(str, &ch, 1);
+
+    } while (ch != EOF);
+
+    // Closing the file
+    fclose(file);
+
+    return str;
+}
+
 int main() {
     automaton* automatonChain = NULL;
     int statesToAdd;
@@ -91,29 +149,17 @@ int main() {
 
     displayAutomaton(automatonChain);
 
-    FILE* file;
-    char ch;
+    char* fileText = readFileAndReturnText("testing-file.txt");
 
-    // Opening the file
-    file = fopen("testing-file.txt", "r");
+    printf("\nFILE TEXT: %s", fileText);
+    
+    const int automatonLength = getAutomatonLength(automatonChain);
 
-    if (file == NULL) printf("\nThe file can't be opened\n");
+    char word[100] = "";
 
-    printf("\nCheck file...\n");
-
-    char str[100] = "";
-
-    do {
-        ch = fgetc(file);
-        
-        strncat(str, &ch, 1);
-
-    } while (ch != EOF);
-
-    // Closing the file
-    fclose(file);
-
-    printf("\n this is the text: %s", str);
+    bool newWord = true;
+    bool isValid = false;
+    int cyclesCounter = 1;
 
     return 0;
 }
