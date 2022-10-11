@@ -1,12 +1,18 @@
 #include <stdio.h>
 #include <malloc.h>
+#include <string.h>
+#include <stdbool.h>
+
+typedef struct stringList {
+    char* text;
+    struct stringList* next;
+} stringList;
 
 typedef struct automaton {
     int state;
     char transition;
     struct automaton* next;
-}automaton;
-
+} automaton;
 
 
 automaton* createNewNode(int state) {
@@ -95,15 +101,19 @@ int main() {
 
     printf("\nCheck file...\n");
 
-    
+    char str[100] = "";
 
     do {
         ch = fgetc(file);
-        printf("%c", ch);
+        
+        strncat(str, &ch, 1);
+
     } while (ch != EOF);
 
     // Closing the file
     fclose(file);
+
+    printf("\n this is the text: %s", str);
 
     return 0;
 }
