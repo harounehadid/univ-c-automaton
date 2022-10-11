@@ -85,5 +85,25 @@ int main() {
 
     displayAutomaton(automatonChain);
 
+    FILE* file;
+    char ch;
+
+    // Opening the file
+    file = fopen("testing-file.txt", "r");
+
+    if (file == NULL) printf("\nThe file can't be opened\n");
+
+    printf("\nCheck file...\n");
+
+    
+
+    do {
+        ch = fgetc(file);
+        printf("%c", ch);
+    } while (ch != EOF);
+
+    // Closing the file
+    fclose(file);
+
     return 0;
 }
