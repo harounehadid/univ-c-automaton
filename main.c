@@ -22,7 +22,7 @@ automaton* createNewNode(int state) {
     automaton* newNode = NULL;
     char transition;
 
-    // The while loop to counter memory allocation failures
+    // The while loop to account for memory allocation failures
     do {
         newNode = malloc(sizeof(automaton));
     
@@ -44,15 +44,13 @@ automaton* addToAutomatonChain(automaton* chain, automaton* node) {
 
     if (chain == NULL) {
         chain = node;
-        node = NULL;
-        
+        node = NULL;     
     }
     else {
         automaton* temp = chain;
 
         while (temp->next != NULL) {
-            temp = temp->next;
-            
+            temp = temp->next;  
         }
 
         temp->next = node;
@@ -134,6 +132,41 @@ char* readFileAndReturnText(char* fileName) {
     return str;
 }
 
+stringList* addWordToList(stringList* strList, char* word) {
+    // To prevent jumpig lines
+    fflush(stdin);
+
+    stringList* newWord = NULL;
+
+    // The while loop to account for memory allocation failures
+    do {
+        newWord = malloc(sizeof(stringList));
+    
+    } while (newWord == NULL);
+
+    newWord->word = word;
+    newWord->next = NULL;
+
+    if (strList == NULL) {
+        strList = newWord;
+        newWord = NULL;
+        
+    }
+    else {
+        stringList* temp = strList;
+
+        while (temp->next != NULL) {
+            temp = temp->next;  
+        }
+
+        temp->next = newWord;
+        temp = NULL;
+        newWord = NULL;
+    }
+
+    return strList;
+}
+
 int main() {
     automaton* automatonChain = NULL;
     int statesToAdd;
@@ -152,8 +185,10 @@ int main() {
     char* fileText = readFileAndReturnText("testing-file.txt");
 
     printf("\nFILE TEXT: %s", fileText);
-    
-    const int automatonLength = getAutomatonLength(automatonChain);
+
+    // Create analyze function that takes the text and two lists for recognized and non recognized words
+    // Analyze and filter
+    // Check against automaton function
 
     char word[100] = "";
 
