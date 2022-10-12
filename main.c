@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 typedef struct automaton {
     int state;
@@ -100,7 +101,7 @@ char* readFileAndReturnText(char* fileName) {
     // Count how many character in the file
     int charCount = 0;
 
-    for (char c = getc(file); c != EOF; c = getc(file)) {
+    for (char c = fgetc(file); c != EOF; c = fgetc(file)) {
         charCount++;
     }
 
@@ -111,11 +112,11 @@ char* readFileAndReturnText(char* fileName) {
     char* str = NULL;
 
     do {
-        str = (char *)malloc(charCount * sizeof(char));
+        str = malloc(charCount * sizeof(char));
 
     } while (str == NULL);
 
-    str[0] = ' ';
+    str[0] = '\0';
 
     // Append characters from the file to form a string
     do {
