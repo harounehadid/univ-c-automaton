@@ -3,11 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-typedef struct stringList {
-    char* word;
-    struct stringList* next;
-} stringList;
-
 typedef struct automaton {
     int state;
     char transition;
@@ -87,9 +82,6 @@ int getAutomatonLength(automaton* chain) {
 }
 
 char* readFileAndReturnText(char* fileName) {
-    // Just in case
-    fflush(stdin);
-
     FILE* file;
     char ch;
 
@@ -118,6 +110,7 @@ char* readFileAndReturnText(char* fileName) {
 
     } while (str == NULL);
     
+    fflush(stdin);
 
     // Append characters from the file to form a string
     do {
@@ -126,45 +119,55 @@ char* readFileAndReturnText(char* fileName) {
 
     } while (ch != EOF);
 
+    printf("\nFILE TEXT: %s", str);
+
     // Closing the file
     fclose(file);
 
     return str;
 }
 
-stringList* addWordToList(stringList* strList, char* word) {
-    // To prevent jumpig lines
-    fflush(stdin);
+bool checkAgainstAutomaton(automaton* chain, char* word) {
+    bool isRecognizable = true;
+    automaton* temp = chain;
+    int automatonLength = getAutomatonLength(chain);
 
-    stringList* newWord = NULL;
+    if (automatonLength == strlen(word)) {
+        for (int i = 0; i < strlen(word); i++) {
+            if (word[i] != temp->transition || temp == NULL) {
+                isRecognizable = false;
+                break;
+            }
 
-    // The while loop to account for memory allocation failures
-    do {
-        newWord = malloc(sizeof(stringList));
-    
-    } while (newWord == NULL);
-
-    newWord->word = word;
-    newWord->next = NULL;
-
-    if (strList == NULL) {
-        strList = newWord;
-        newWord = NULL;
-        
+            temp = temp->next;
+        }
     }
     else {
-        stringList* temp = strList;
-
-        while (temp->next != NULL) {
-            temp = temp->next;  
-        }
-
-        temp->next = newWord;
-        temp = NULL;
-        newWord = NULL;
+        isRecognizable = false;
     }
 
-    return strList;
+    return isRecognizable;
+}
+
+// I could've made this function better but it's way too out of this project's scope
+void analyzeAndFilter(automaton* chain, char* text) {
+    bool isRecognizable;
+    
+    for (int i = 0; i < strlen(text) - 1; i++) {
+        char word[50] = "";
+        
+        while (text[i] != ' ' && i < strlen(text) - 1) {
+            strncat(word, &text[i], 1);
+            i++;
+        }
+
+        printf("\nWord: %s", word);
+
+        isRecognizable = checkAgainstAutomaton(chain, word);
+
+        // Here dipaly the recognized and non recognized words
+        printf(isRecognizable ? "  Recognized" : "  Lexical Error");
+    }
 }
 
 int main() {
@@ -185,16 +188,10 @@ int main() {
     char* fileText = readFileAndReturnText("testing-file.txt");
 
     printf("\nFILE TEXT: %s", fileText);
+    printf("\n");
 
-    // Create analyze function that takes the text and two lists for recognized and non recognized words
-    // Analyze and filter
-    // Check against automaton function
-
-    char word[100] = "";
-
-    bool newWord = true;
-    bool isValid = false;
-    int cyclesCounter = 1;
+    analyzeAndFilter(automatonChain, fileText);
+    printf("\n\n");
 
     return 0;
 }
