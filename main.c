@@ -10,7 +10,7 @@ typedef struct automaton {
 } automaton;
 
 
-automaton* createNewNode(int state) {
+automaton* createNewNode(int state, bool finalState) {
     // To prevent jumpig lines
     fflush(stdin);
 
@@ -23,8 +23,13 @@ automaton* createNewNode(int state) {
     
     } while (newNode == NULL);
 
-    printf("Enter the transition of state number %d: ", state);
-    scanf("%c", &transition);
+    if (!finalState) {
+        printf("Enter the transition of state number %d: ", state);
+        scanf("%c", &transition);
+    }
+    else {
+        transition = '-';
+    }
 
     newNode->state = state;
     newNode->transition = transition;
@@ -103,14 +108,14 @@ char* readFileAndReturnText(char* fileName) {
     rewind(file);
 
     // Creating the variable that's gonna hold all file's text
-    char* str;
+    char* str = NULL;
 
     do {
-        str = malloc(charCount * sizeof(char));
+        str = (char *)malloc(charCount * sizeof(char));
 
     } while (str == NULL);
-    
-    fflush(stdin);
+
+    str[0] = ' ';
 
     // Append characters from the file to form a string
     do {
@@ -118,8 +123,6 @@ char* readFileAndReturnText(char* fileName) {
         strncat(str, &ch, 1);
 
     } while (ch != EOF);
-
-    printf("\nFILE TEXT: %s", str);
 
     // Closing the file
     fclose(file);
@@ -132,7 +135,8 @@ bool checkAgainstAutomaton(automaton* chain, char* word) {
     automaton* temp = chain;
     int automatonLength = getAutomatonLength(chain);
 
-    if (automatonLength == strlen(word)) {
+    // The -1 is added because the final state doesn't have a transition, I made '-' to indicate no transition exists
+    if (strlen(word) == automatonLength - 1) {
         for (int i = 0; i < strlen(word); i++) {
             if (word[i] != temp->transition || temp == NULL) {
                 isRecognizable = false;
@@ -179,7 +183,10 @@ int main() {
     scanf("%d", &statesToAdd);
 
     for (int i = 1; i <= statesToAdd; i++) {
-        automaton* newState = createNewNode(i);
+        automaton* newState = NULL;
+        // If it reaches the final state don't ask for input
+        newState = createNewNode(i, i == statesToAdd);
+
         automatonChain = addToAutomatonChain(automatonChain, newState);
     }
 
